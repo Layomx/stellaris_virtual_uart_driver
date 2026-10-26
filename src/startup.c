@@ -54,7 +54,7 @@ const uintptr_t vector_table[16] = {
 
 void Reset_Handler(void) {
   uint32_t *src = &_sidata;
-  for (uint32_t *dst = _sdata; dst < &_edata;) {
+  for (uint32_t *dst = &_sdata; dst < &_edata;) {
     *dst++ = *src++;
   }
   for (uint32_t *dst = &_sbss; dst < &_ebss;) {

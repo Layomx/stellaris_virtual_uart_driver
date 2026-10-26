@@ -10,6 +10,7 @@ set(LINKER_SCRIPT ${CMAKE_SOURCE_DIR}/ld/LM3S6965.ld)
 add_executable(${FIRMWARE_TARGET}
     src/main.c
     src/startup.c
+    src/uart.c
 )
 
 target_include_directories(${FIRMWARE_TARGET}
@@ -32,6 +33,7 @@ target_link_options(${FIRMWARE_TARGET} PRIVATE
     -mcpu=cortex-m3
     -mthumb
     -T${LINKER_SCRIPT}
+    -nostdlib
     -nostartfiles
     -Wl,--gc-sections
     -Wl,-Map=${CMAKE_CURRENT_BINARY_DIR}/${FIRMWARE_TARGET}.map
@@ -58,8 +60,7 @@ add_custom_target(qemu
             -M lm3s6965evb
             -kernel $<TARGET_FILE:${FIRMWARE_TARGET}>
             -nographic
-            -serial stdio
-            -monitor none
+            -serial mon:stdio
     DEPENDS ${FIRMWARE_TARGET}
     USES_TERMINAL
     COMMENT "Running firmware in QEMU"

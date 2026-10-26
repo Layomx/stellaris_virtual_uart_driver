@@ -37,7 +37,8 @@ cmake --build build --target qemu
 ```
 
 The QEMU target runs the firmware using the `lm3s6965evb` machine and
-connects UART output to the terminal.
+connects UART output to the terminal. To exit QEMU, press `Ctrl-A` followed
+by `x`.
 
 ## clangd integration
 
