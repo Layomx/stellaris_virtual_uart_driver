@@ -3,6 +3,9 @@ cmake_minimum_required(VERSION 3.20)
 project(stellaris_uart LANGUAGES C ASM)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_C_STANDARD_REQUIRED ON)
+set(CMAKE_C_EXTENSIONS OFF)
 
 set(FIRMWARE_TARGET stellaris_uart)
 set(LINKER_SCRIPT ${CMAKE_SOURCE_DIR}/ld/LM3S6965.ld)
@@ -15,7 +18,7 @@ add_executable(${FIRMWARE_TARGET}
 
 target_include_directories(${FIRMWARE_TARGET}
     PRIVATE
-        ${CMAKE_SOURCE_DIR}
+        ${CMAKE_SOURCE_DIR}/include
 )
 
 target_compile_options(${FIRMWARE_TARGET} PRIVATE
@@ -27,6 +30,7 @@ target_compile_options(${FIRMWARE_TARGET} PRIVATE
     -Wall
     -Wextra
     -Wpedantic
+    -Werror
 )
 
 target_link_options(${FIRMWARE_TARGET} PRIVATE
@@ -39,6 +43,8 @@ target_link_options(${FIRMWARE_TARGET} PRIVATE
     -Wl,-Map=${CMAKE_CURRENT_BINARY_DIR}/${FIRMWARE_TARGET}.map
     -Wl,--print-memory-usage
 )
+
+target_link_libraries(${FIRMWARE_TARGET} PRIVATE gcc)
 
 set_target_properties(${FIRMWARE_TARGET} PROPERTIES
     SUFFIX ".elf"
@@ -64,4 +70,12 @@ add_custom_target(qemu
     DEPENDS ${FIRMWARE_TARGET}
     USES_TERMINAL
     COMMENT "Running firmware in QEMU"
+)
+
+add_custom_target(qemu-test
+    COMMAND ${CMAKE_SOURCE_DIR}/tests/run_qemu.sh
+            $<TARGET_FILE:${FIRMWARE_TARGET}>
+    DEPENDS ${FIRMWARE_TARGET}
+    USES_TERMINAL
+    COMMENT "Running the QEMU smoke test"
 )

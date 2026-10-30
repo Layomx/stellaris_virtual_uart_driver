@@ -49,5 +49,7 @@ SECTIONS
     {
         *(.comment)
         *(.note*)
+        *(.ARM.exidx*)
+        *(.ARM.extab*)
     }
 }

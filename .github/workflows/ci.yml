@@ -1,0 +1,42 @@
+name: Build and test
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  firmware:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install toolchain and test dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes \
+            gcc-arm-none-eabi \
+            binutils-arm-none-eabi \
+            cmake \
+            ninja-build \
+            qemu-system-arm \
+            clangd
+
+      - name: Configure
+        run: cmake -S . -B build -G Ninja \
+          -DCMAKE_TOOLCHAIN_FILE=cmake/arm-none-eabi.cmake
+
+      - name: Build
+        run: cmake --build build --parallel
+
+      - name: QEMU smoke test
+        run: cmake --build build --target qemu-test
+
+      - name: clangd checks
+        run: |
+          for file in src/*.c; do
+            clangd --check="$file" --compile-commands-dir=build
+          done

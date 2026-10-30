@@ -1,11 +1,8 @@
-/*
-  Vector table and reset handler for a Cortex-M3
-
-  On reset the core reads two words from address 0x00000000:
-    word 0: initial main stack pointer
-    word 1: address of the reset hander (bit 0 set = Thumb)
-  Everything else here prepares teh C runtime: .data copy, .bss clear.
-*/
+// Cortex-M3 vector table and reset handler.
+//
+// On reset the core reads the initial stack pointer and reset handler from
+// the first two entries at address 0x00000000. Reset_Handler then copies
+// .data to RAM, clears .bss, and calls main().
 
 #include <stdint.h>
 
@@ -27,11 +24,8 @@ void DebugMon_Handler(void) __attribute__((weak, alias("Default_Handler")));
 void PendSV_Handler(void) __attribute__((weak, alias("Default_Handler")));
 void SysTick_Handler(void) __attribute__((weak, alias("Default_Handler")));
 
-/*
-
-    Core exceptions only (16 entries). This polling-only project enables
-
-*/
+// Core exceptions only. Peripheral IRQ vectors can be appended when
+// interrupt-driven operation is introduced.
 __attribute__((section(".isr_vector"), used))
 const uintptr_t vector_table[16] = {
     (uintptr_t)&_estack,      // 0: initial SP
@@ -52,7 +46,8 @@ const uintptr_t vector_table[16] = {
     (uintptr_t)SysTick_Handler,
 };
 
-void Reset_Handler(void) {
+void Reset_Handler(void)
+{
   uint32_t *src = &_sidata;
   for (uint32_t *dst = &_sdata; dst < &_edata;) {
     *dst++ = *src++;
@@ -65,7 +60,8 @@ void Reset_Handler(void) {
   }
 }
 
-void Default_Handler(void) {
+void Default_Handler(void)
+{
   for (;;) {
   }
 }

@@ -4,7 +4,7 @@
     Source: Stellaris LM3S6965 Microcontroller datasheet (memory map + register chapters).
 */
 
-#ifndef  LM3S6965_REGS_H
+#ifndef LM3S6965_REGS_H
 #define LM3S6965_REGS_H
 
 #include <stdint.h>

@@ -26,19 +26,20 @@ typedef struct {
 
 #define UART_OK 0
 #define UART_ERR_PARAM (-1)
+#define UART_ERR_TIMEOUT (-2)
 
-// Configure UART0 on PA0/PA1. sysclk_hz is the UART input clck (system clock)
+// Configure UART0 on PA0/PA1. sysclk_hz is the UART input clock.
 int uart_init(const uart_config_t *cfg, uint32_t sysclk_hz);
 
 bool uart_tx_ready(void); // true is a byte can be written now
 bool uart_rx_ready(void); // true if a byte is waiting to be read
 bool uart_tx_busy(void);  // true while bits are still being shifted
 
-void uart_write_byte(uint8_t byte); // blocks while TX FIFO is full
-void uart_write(const char *str);   // NUL terminated string
-void uart_flush(void);              // blocks until the line is idle
+int uart_write_byte(uint8_t byte); // waits while TX FIFO is full
+int uart_write(const char *str);   // NUL terminated string
+int uart_flush(void);              // waits until the line is idle
 
-// Blocks until a byte arrives. Returns 0 or a mask of UART_RX_ERR_* flags
-uint32_t uart_read_byte(uint8_t *byte);
+// Waits for a byte. Returns status and writes UART_RX_ERR_* flags to errors.
+int uart_read_byte(uint8_t *byte, uint32_t *errors);
 
 #endif

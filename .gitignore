@@ -1,6 +1,12 @@
 /build/
-/.cache/
+.cache/
+.vscode/
+.idea/
 *.elf
 *.bin
 *.map
 compile_commands.json
+*.img
+*.log
+*.swp
+*~
