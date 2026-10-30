@@ -27,7 +27,15 @@ jobs:
 
       - name: Configure
         run: cmake -S . -B build -G Ninja \
-          -DCMAKE_TOOLCHAIN_FILE=cmake/arm-none-eabi.cmake
+          -DCMAKE_TOOLCHAIN_FILE="$PWD/cmake/arm-none-eabi.cmake" \
+          -DCMAKE_C_COMPILER=arm-none-eabi-gcc \
+          -DCMAKE_ASM_COMPILER=arm-none-eabi-gcc
+
+      - name: Verify ARM compiler
+        run: |
+          compiler="$(grep '^CMAKE_C_COMPILER:' build/CMakeCache.txt | cut -d= -f2)"
+          test "$(basename "$compiler")" = "arm-none-eabi-gcc"
+          arm-none-eabi-gcc --version
 
       - name: Build
         run: cmake --build build --parallel
